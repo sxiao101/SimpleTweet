@@ -1,12 +1,16 @@
 package com.codepath.apps.restclienttemplate;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -27,6 +31,7 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
+    Button btLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +49,18 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setAdapter(adapter);
 
         popupateHomeTimeline();
+
+        btLogout = findViewById(R.id.btLogout);
+    }
+
+    public void onLogoutButton(View view) {
+        client.clearAccessToken(); // forget who's logged in
+        finish(); // navigate backwards to Login screen
     }
 
     private void popupateHomeTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.i(TAG, "onSuccess!" + json.toString());
