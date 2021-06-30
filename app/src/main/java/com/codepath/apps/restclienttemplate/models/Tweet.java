@@ -26,6 +26,11 @@ public class Tweet {
     public Entity entity;
     public String timeAgo;
     public String mediaUrl;
+    public String id;
+    public int rtCount;
+    public int favCount;
+    public boolean rt;
+    public boolean fav;
 
     // empty constructor needed by the Parveler library
     public Tweet(){}
@@ -36,6 +41,12 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.timeAgo = getRelativeTimeAgo(tweet.createdAt);
+        tweet.id = jsonObject.getString("id_str");
+        tweet.rtCount = jsonObject.getInt("retweet_count");
+        tweet.favCount = jsonObject.getInt("favorite_count");
+        tweet.rt = jsonObject.getBoolean("retweeted");
+        tweet.fav = jsonObject.getBoolean("favorited");
+
         if (!jsonObject.isNull("extended_entities")) {
             //tweet.entity = Entity.fromJson(jsonObject.getJSONObject("entities"));
             JSONObject entities = jsonObject.getJSONObject("extended_entities");

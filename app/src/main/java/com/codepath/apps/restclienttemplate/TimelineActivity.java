@@ -47,14 +47,106 @@ public class TimelineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
 
+   //     getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.ic_launcher_twitter_round);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+    //    getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         client = TwitterApp.getRestClient(this);
 
         btLogout = findViewById(R.id.btLogout);
         // Find the recycler view
         rvTweets = findViewById(R.id.rvTweets);
         tweets = new ArrayList<>();
+
+        TweetsAdapter.OnClickListener onClickListener = new TweetsAdapter.OnClickListener() {
+            @Override
+            public void onReplyClicked(int position) {
+                Log.d("TimelineActivity", "Reply click at " + position);
+                // create the new activity
+                Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
+                Tweet tweet = tweets.get(position);
+                i.putExtra("id", tweet.id);
+                i.putExtra("author", tweet.user.screenName);
+                startActivityForResult(i, REQUEST_CODE);
+            }
+        };
+
+        TweetsAdapter.TweetItemListener listener = new TweetsAdapter.TweetItemListener() {
+            @Override
+            public void onRetweetClicked(int position) {
+                Log.d("TimelineActivity", "Retweet click at " + position);
+                // create the new activity
+                Tweet tweet = tweets.get(position);
+                client.reTweet(tweet.id, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i("TimelineActivity retweet", "onSuccess!" + json.toString());
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.i(TAG, "onFailure!" + response, throwable);
+                    }
+                });
+            }
+
+            @Override
+            public void onRetweetUnclicked(int position) {
+                Log.d("TimelineActivity", "Retweet unclick at " + position);
+                // create the new activity
+                Tweet tweet = tweets.get(position);
+                client.unreTweet(tweet.id, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.i(TAG, "onFailure!" + response, throwable);
+                    }
+                });
+            }
+
+            @Override
+            public void onLikeClicked(int position) {
+                Log.d("TimelineActivity", "Fav click at " + position);
+                // create the new activity
+                Tweet tweet = tweets.get(position);
+                client.likeTweet(tweet.id, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i(TAG, "onSuccess!" + json.toString());
+
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.i(TAG, "onFailure!" + response, throwable);
+                    }
+                });
+            }
+            @Override
+            public void onLikeUnclicked(int position) {
+                Log.d("TimelineActivity", "Fav unclick at " + position);
+                // create the new activity
+                Tweet tweet = tweets.get(position);
+                client.unlikeTweet(tweet.id, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.i(TAG, "onFailure!" + response, throwable);
+                    }
+                });
+            }
+        };
+
         // init the list of tweets and adapter
-        adapter = new TweetsAdapter(this, tweets);// recycler view setup: layout manager and the adapter
+        adapter = new TweetsAdapter(this, tweets, onClickListener, listener);// recycler view setup: layout manager and the adapter
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -76,6 +168,12 @@ public class TimelineActivity extends AppCompatActivity {
 
         popupateHomeTimeline();
 
+    }
+    public void onComposeAction(View view) {
+            // navigate to the compose activity
+            Intent intent = new Intent(this, ComposeActivity.class);
+            intent.putExtra("id", "");
+            startActivityForResult(intent, REQUEST_CODE);
     }
 
     public void fetchTimelineAsync(int page) {
@@ -103,23 +201,6 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.d(TAG, "Fetch timeline error: " + response);
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.compose) {
-            // navigate to the compose activity
-            Intent intent = new Intent(this, ComposeActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
