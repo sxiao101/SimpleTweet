@@ -69,6 +69,7 @@ public class TimelineActivity extends AppCompatActivity {
                 Tweet tweet = tweets.get(position);
                 i.putExtra("id", tweet.id);
                 i.putExtra("author", tweet.user.screenName);
+                //i.putExtra("from", "timeline");
                 startActivityForResult(i, REQUEST_CODE);
             }
         };
@@ -166,7 +167,8 @@ public class TimelineActivity extends AppCompatActivity {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        popupateHomeTimeline();
+        populateHomeTimeline();
+
 
     }
     public void onComposeAction(View view) {
@@ -230,7 +232,7 @@ public class TimelineActivity extends AppCompatActivity {
         //finish(); // navigate backwards to Login screen
     }
 
-    private void popupateHomeTimeline() {
+    private void populateHomeTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
 
             @Override

@@ -64,24 +64,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         Log.d(TAG, "OnCreate: ");
         View view = LayoutInflater.from(context).inflate(R.layout.item_tweet, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
-
-        /*viewHolder.btRetweet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int p = viewHolder.getAdapterPosition();
-                Log.d("TimelineActivity", "Retweet click at " + p);
-
-                // create the new activity
-                Intent i = new Intent(context, ComposeActivity.class);
-                Tweet tweet = tweets.get(p);
-                i.putExtra("id", tweet.id);
-                i.putExtra("author", tweet.user.screenName);
-                ((Activity)context).startActivityForResult(i, REQUEST_CODE);
-            }
-        });
-        8/
-         */
-
         return viewHolder;
     }
 
@@ -160,10 +142,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvName.setText(tweet.user.name);
             tvScreenName.setText(String.format("@%s", tweet.user.screenName));
             tvTime.setText(tweet.timeAgo);
-            int favCount = tweet.favCount;
-            tvFav.setText("" + favCount);
-            int rtCount = tweet.rtCount;
-            tvRetweet.setText("" + rtCount);
+            tvFav.setText("" + tweet.favCount);
+            tvRetweet.setText("" + tweet.rtCount);
 
             if (tweet.rt) {
                 btRetweet.setImageDrawable(context.getDrawable(R.drawable.ic_vector_retweet));
@@ -198,10 +178,16 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                         btRetweet.setImageDrawable(context.getDrawable(R.drawable.ic_vector_retweet));
                         btRetweet.setSelected(true);
                         listener.onRetweetClicked(getAdapterPosition());
+                        tweet.rtCount++;
+                        tweet.rt = true;
+                        tvRetweet.setText("" + tweet.rtCount);
                     } else {
                         btRetweet.setImageDrawable(context.getDrawable(R.drawable.ic_vector_retweet_stroke));
                         btRetweet.setSelected(false);
                         listener.onRetweetUnclicked(getAdapterPosition());
+                        tweet.rtCount--;
+                        tweet.rt = false;
+                        tvRetweet.setText("" + tweet.rtCount);
                     }
                 }
             });
@@ -213,13 +199,17 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                         btFav.setImageDrawable(context.getDrawable(R.drawable.ic_vector_heart));
                         btFav.setSelected(true);
                         listener.onLikeClicked(getAdapterPosition());
-                        tvFav.setText("" + (Integer.parseInt(tvFav.getText().toString()) + 1));
+                        tweet.favCount++;
+                        tweet.fav = true;
+                        tvFav.setText("" + tweet.favCount);
                     } else {
                         Log.d("Status", "unliking");
                         btFav.setImageDrawable(context.getDrawable(R.drawable.ic_vector_heart_stroke));
                         btFav.setSelected(false);
                         listener.onLikeUnclicked(getAdapterPosition());
-                        tvFav.setText("" + (Integer.parseInt(tvFav.getText().toString()) - 1));
+                        tweet.favCount--;
+                        tweet.fav = false;
+                        tvFav.setText("" + tweet.favCount);
                     }
                 }
             });

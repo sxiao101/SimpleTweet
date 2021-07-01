@@ -47,7 +47,6 @@ public class ComposeActivity extends AppCompatActivity {
             etCompose.setText(String.format("@%s", replyAuthor));
             etCompose.setHint(String.format("Replying to %s...", replyAuthor));
         }
-
         // Set click listener on button
         btnTweet.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +70,8 @@ public class ComposeActivity extends AppCompatActivity {
                         try {
                             Tweet tweet = Tweet.fromJson(json.jsonObject);
                             Log.i(TAG, "Published tweet says: " + tweet);
-                            Intent intent = new Intent();
+                            Intent intent;
+                            intent = new Intent();
                             intent.putExtra("tweet", Parcels.wrap(tweet));
                             setResult(RESULT_OK, intent);
                             finish();

@@ -32,7 +32,7 @@ public class Tweet {
     public boolean rt;
     public boolean fav;
 
-    // empty constructor needed by the Parveler library
+    // empty constructor needed by the Parceler library
     public Tweet(){}
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
