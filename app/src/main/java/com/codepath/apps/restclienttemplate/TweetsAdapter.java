@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -132,7 +134,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                     Tweet tweet = tweets.get(position);
                     Intent intent = new Intent(context, TweetDetailsActivity.class);
                     intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
-                    context.startActivity(intent);
+                    intent.putExtra("pos", position);
+                    Pair<View, String> p1 = Pair.create(ivProfileImage, "profile");
+                    Pair<View, String> p2 = Pair.create(tvName, "name");
+                    Pair<View, String> p3 = Pair.create(tvScreenName, "user");
+                    Pair<View, String> p4 = Pair.create(ivMedia, "media");
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(((Activity) context), p1, p2, p3);
+                    context.startActivity(intent, options.toBundle());
+                    //context.startActivity(intent);
                 }
             });
         }
@@ -148,10 +158,14 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             if (tweet.rt) {
                 btRetweet.setImageDrawable(context.getDrawable(R.drawable.ic_vector_retweet));
                 btRetweet.setSelected(true);
+            } else{
+                btRetweet.setSelected(false);
             }
             if (tweet.fav) {
                 btFav.setImageDrawable(context.getDrawable(R.drawable.ic_vector_heart));
                 btFav.setSelected(true);
+            } else {
+                btFav.setSelected(false);
             }
             // for rounded corners
             int radius = 30;

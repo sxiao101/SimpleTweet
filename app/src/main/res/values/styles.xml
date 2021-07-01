@@ -7,6 +7,8 @@
             backward-compatibility can go here.
         -->
         <item name="colorPrimary">#ff1da1f2</item>
+        <item name="android:windowContentTransitions">true</item>
+
     </style>
 
     <!-- Application theme. -->

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
     TextView tvScreenName;
     TextView tvName;
     ImageView ivMedia;
+    TextView tvTimePosted;
     ImageButton btRetweet;
     ImageButton btFav;
     ImageButton btReply;
@@ -32,6 +34,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
     TextView tvFav;
     Tweet currTweet;
     TwitterClient client;
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +48,23 @@ public class TweetDetailsActivity extends AppCompatActivity {
         tvName = findViewById(R.id.tvName);
         tvScreenName = findViewById(R.id.tvScreenName);
         ivMedia = findViewById(R.id.ivMedia);
+        tvTimePosted = findViewById(R.id.tvTimePosted);
         btRetweet = findViewById(R.id.btRetweet);
         btFav = findViewById(R.id.btFav);
         btReply = findViewById(R.id.btReply);
         tvRetweet = findViewById(R.id.tvRetweet);
         tvFav = findViewById(R.id.tvFav);
 
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         currTweet = Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
+        position = getIntent().getIntExtra("pos", 0);
 
         tvBody.setText(currTweet.body);
         tvName.setText(currTweet.user.name);
         tvScreenName.setText(String.format("@%s", currTweet.user.screenName));
+        tvTimePosted.setText(currTweet.createdAt);
         tvFav.setText("" + currTweet.favCount);
         tvRetweet.setText("" + currTweet.rtCount);
 
@@ -170,5 +179,16 @@ public class TweetDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                Intent homeIntent = new Intent(this, TimelineActivity.class);
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(homeIntent);
+        }
+        return (super.onOptionsItemSelected(menuItem));
     }
 }
