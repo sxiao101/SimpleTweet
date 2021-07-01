@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.codepath.apps.restclienttemplate.models.SampleModel;
 import com.codepath.apps.restclienttemplate.models.SampleModelDao;
@@ -14,11 +16,18 @@ import com.codepath.oauth.OAuthLoginActionBarActivity;
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 
 	SampleModelDao sampleModelDao;
+
+	ImageView twitterLogo;
+	TextView tvWelcome;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+
+		getSupportActionBar().hide();
+		twitterLogo = findViewById(R.id.twitterLogo);
+		tvWelcome = findViewById(R.id.tvWelcome);
 
 		final SampleModel sampleModel = new SampleModel();
 		sampleModel.setName("CodePath");
